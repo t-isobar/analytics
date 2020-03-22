@@ -18,7 +18,7 @@ class GAnalyticsUpload:
         self.custom_data_source_id = custom_data_source_id
         self.credentials = service_account.Credentials.from_service_account_file(path_to_json)
         self.scoped_credentials = self.credentials.with_scopes(self.SCOPES)
-        self.analytics = build('analytics', 'v3', credentials=scoped_credentials)
+        self.analytics = build('analytics', 'v3', credentials=self.scoped_credentials)
     
     def upload_data(self, data_frame, path_to_csv, file_name):
         """
@@ -44,7 +44,7 @@ class GAnalyticsUpload:
         return status, message
         
     def check_upload_status(self, daily_upload_id):
-        uploads = analytics.management().uploads().list(accountId=self.account_id, webPropertyId=self.web_property_id,
+        uploads = self.analytics.management().uploads().list(accountId=self.account_id, webPropertyId=self.web_property_id,
                                                         customDataSourceId=self.custom_data_source_id).execute()
         for upload in uploads['items']:
             if upload['id'] == daily_upload_id:
