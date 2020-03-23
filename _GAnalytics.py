@@ -174,7 +174,6 @@ def getGAnalyticsReport(view_id, path_to_ga, client_name, path_to_bq, date_from,
     date_range = ut.slice_date_on_period(date_from, date_to, 1)
 
     for date_from, date_to in date_range:
-
         for report in ga.report_dict:
             if report_type in report:
                 metric_list = [re.sub('[_]', ':', field) for field in list(ga.report_dict[report]['metrics'].keys())]
