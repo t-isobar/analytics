@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "t-isobar-lenta",
+  "private_key_id": "c3a9e38a6e161e4afdea87ac4b158ff259201e55",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC1UHMY++94BWAe\nh6yUf1RYhdpEhr5fIt+wLEO/QoYoSiL2cYNKOQWVBLW4Lh+tpXrDvjRYXbuUdMSW\ncs3Moenne+X3p4t48zsCXtt8ZouD4STCFudQQVSLZ/mQfEG+EI+JTcKXr/ySz9LK\nrrHqc9rejz+9AnngwMxQrElJZgAJcSSpbN7F5AQnOsDKkSQUN7poGhRKRXhsiYjr\nyAbcFGeXKeBNOceUkb/xF7ufaFrZZDJ2+/lp3tLy7vhuxCrGePoNnMr6reqRaSLw\nwg0HzeROG5gTi8mhT1zA3mfeHIH8Vkr4sEZCDVbyi8w+FyFHIQ+GNk/gnzfgeeTO\ngwshmz0NAgMBAAECggEAKUdqFNeSwu/yXLEF1P8SLF84/J3yrIUriRfiyqHyGi0a\nvaHFQrotr6oVVxvFIYsJopPkpfOdF6Tn9tqnSP3Z21ZFWnc+FSjHF/iRnsZX4Av7\niuac/hQJk/11f3QSoZtymk9mTJOH/MKs2nEgV2DOBRp25+iu58DtIza+LqQ2wO8r\nYJDNdSQIYW0BQE+AnS7bnool95XPYwP3BZnHl//WPt0YBkfz+FNBw/uC7Ft6Kflw\nkfXG3sp1WcwVTuki8k+A11EPW9wm1Dhf8i3yTFQMYiqKAIB0/1R0ygEiCPNW9DvP\n09Eh5AyN1TKbJaISjuW5tmCP80Qfo2muuZatQlkaoQKBgQDsxDzsfLnuaShZYF0u\nOS4LftrVzYoYCQ4h6fV6BEYfbW1rSLLS63QCLb2cq5xzDYO1g1i4EDOqPk2Hw9Vn\nM1/wlEy2+kGZhoMxBcgcxDe0SNvSMSu7aC/WzxT9wnZrRu1sVSdOIaWNFJseHfFP\nNaXBlxh4ga0QC9EZbMzlShHPMQKBgQDECwisGoWI2oEGSfE8Wl+ac9MMUq629dSR\n3Z1gG7vifgIrnGx+j2A5tJvhCGVapnRTaAMDx2/yGN3Q3tgMvEtHyxrTlbYS6JRb\nlQBdS70537Wo9LNC6MH6WdTxl3FqoA1tXLNYTxnM+gucmFDZO2smDtp5lPCLXrIB\nd2RPBQ7snQKBgGQHZFXlPAhllQ5tj/B/Z9yjc4DwnW8aJEZfub4bICUW7ittQ1+o\n6hIhkQIn3qkdBJAjNdBNyAYc3FSHgBlhsx7JCMAlaqGaGsMTVkARBhe80GI1M+yx\nT8TJKG0tQyp/hL9IGpr/zBmWoxJORCza1XS8iTIgVyV4WJcNSGN2r5+BAoGABPyO\n3OnTybZdH87TrwhRdDlL/f1AanD4Vjl/3kj2T32LCpbw/4sgFHeum1u+UD75qIF1\nyivRgiP1yHFSp4hGle3pocYmGncGBwpUNwtNJeK12TVYNfR7sqWEUBzdCqxFiymX\nekCQ1HDryLDrJYtoX1BzaDJMqA7hkj36NDRZu9UCgYEAyNZliWqa3jihT+FkpGAy\nno5YpVrszS22Mmj+N3/1LuknXq9rKH9d1WwbJKzg8i1ASd1AWZXm6Epb68Ya1UIc\nxCMOyABmPRAaHmUDked06lcQcXSxyuuh6r2HBONqNd0O3l9TyB9UbGKVUho7IcJw\nE3a1+hulwtAJhVsg5JYkcbE=\n-----END PRIVATE KEY-----\n",
+  "client_email": "t-isobar-lenta-analytics@t-isobar-lenta.iam.gserviceaccount.com",
+  "client_id": "116010847084671074317",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/t-isobar-lenta-analytics%40t-isobar-lenta.iam.gserviceaccount.com"
+}
