@@ -1,7 +1,4 @@
-#!usr/bin/python3
-
-
-import time, re
+import time
 from apiclient.discovery import build
 from google.oauth2 import service_account
 import socket

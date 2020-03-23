@@ -1,9 +1,6 @@
-#!usr/bin/python3
-
 import requests, json, sys
 from datetime import datetime, timedelta
-import pandas as pd
-from connectors import _BigQuery
+from connectors._Utils import Utils
 
 
 class Hybrid:
@@ -12,6 +9,7 @@ class Hybrid:
         self.client_secret = client_secret
         self.client_name = client_name
         self.path_to_json = path_to_json
+        self.ut = Utils()
         self.url = "https://api.hybrid.ru/"
         
         self.report_dict = {
@@ -26,11 +24,8 @@ class Hybrid:
                        "CTR": "FLOAT", "id": "STRING"}}
         }
 
-        self.tables_with_schema = {f"{client_name}_Hybrid_{report_name}": self.report_dict[report_name]['fields'] for report_name in list(self.report_dict.keys())}
-
-        self.string_fields = list(set([key for values in self.report_dict.values() for key, value in values['fields'].items() if value == "STRING"]))
-        self.integer_fields = list(set([key for values in self.report_dict.values() for key, value in values['fields'].items() if value == "INTEGER"]))
-        self.float_fields = list(set([key for values in self.report_dict.values() for key, value in values['fields'].items() if value == "FLOAT"]))
+        self.tables_with_schema, self.string_fields, self.integer_fields, self.float_fields = \
+            self.ut.create_fields(client_name, "Hybrid")
         
     def hybrid_auth(self, **kwargs):
         body = {
@@ -81,25 +76,3 @@ class Hybrid:
         if list(stat.keys()) != ['Statistic', 'Total']:
             sys.exit(list(stat.keys()))
         return stat['Statistic']
-    
-def getHybridReport(client_name, client_id, client_secret, date_from, date_to, path_to_json, path_to_bq):
-    bq = _BigQuery.BigQuery(path_to_bq)
-    hybrid = Hybrid(client_id, client_secret, client_name, path_to_json)
-
-    dataset_ID = f"{client_name}_Hybrid"
-    
-    bq.check_or_create_dataset(dataset_ID)
-    bq.check_or_create_tables(hybrid.tables_with_schema, dataset_ID)
-    
-    campaigns = hybrid.get_campaigns()
-    campaign_df = pd.DataFrame(campaigns)
-    campaign_ids = campaign_df['Id'].tolist()
-    bq.data_to_insert(campaign_df, hybrid.integer_fields, hybrid.float_fields, hybrid.string_fields, dataset_ID, f"{client_name}_Hybrid_CAMPAIGNS")
-
-    campaign_stat = hybrid.get_campaign_stat(campaign_ids, date_from, date_to)
-    campaign_stat_df = pd.DataFrame(campaign_stat)
-    bq.data_to_insert(campaign_stat_df, hybrid.integer_fields, hybrid.float_fields, hybrid.string_fields, dataset_ID, f"{client_name}_Hybrid_CAMPAIGN_STAT")
-
-    advertiser_stat = hybrid.get_advertiser_stat(date_from, date_to)
-    advertiser_stat_df = pd.DataFrame(advertiser_stat)
-    bq.data_to_insert(advertiser_stat_df, hybrid.integer_fields, hybrid.float_fields, hybrid.string_fields, dataset_ID, f"{client_name}_Hybrid_ADVERTISER_STAT")

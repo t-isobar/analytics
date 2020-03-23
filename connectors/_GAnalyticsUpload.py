@@ -2,8 +2,6 @@ from apiclient.http import MediaFileUpload
 import time
 from apiclient.discovery import build
 from google.oauth2 import service_account
-from datetime import datetime
-from connectors import _BigQuery
 
 
 class GAnalyticsUpload:
@@ -55,15 +53,3 @@ class GAnalyticsUpload:
                 else:
                     return status, "success"
 
-def UploadDataToGAnalytics(sql_query, rename_schema, source, medium, path_to_ga, path_to_bq, account_id, web_property_id, custom_data_source_id, path_to_csv, file_name, from_date_format):
-    bq = _BigQuery.BigQuery(path_to_bq)
-    data_frame_to_insert = bq.get_select_query(sql_query)
-    
-    data_frame_to_insert = data_frame_to_insert.rename(columns=rename_schema)
-    data_frame_to_insert['ga:medium'] = medium
-    data_frame_to_insert['ga:source'] = source
-    data_frame_to_insert['ga:date'] = data_frame_to_insert['ga:date'].apply(lambda x: datetime.strftime(datetime.strptime(x, from_date_format), "%Y%m%d"))
-
-    ga_upload = GAnalyticsUpload(path_to_ga, account_id, web_property_id, custom_data_source_id)
-    status, message = ga_upload.upload_data(data_frame_to_insert, path_to_csv, file_name)
-    return status, message
