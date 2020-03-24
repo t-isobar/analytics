@@ -1,6 +1,6 @@
 import requests, json, sys
 from datetime import datetime, timedelta
-from connectors._Utils import Utils
+from connectors._Utils import create_fields
 
 
 class Hybrid:
@@ -9,7 +9,6 @@ class Hybrid:
         self.client_secret = client_secret
         self.client_name = client_name
         self.path_to_json = path_to_json
-        self.ut = Utils()
         self.url = "https://api.hybrid.ru/"
         
         self.report_dict = {
@@ -25,7 +24,7 @@ class Hybrid:
         }
 
         self.tables_with_schema, self.string_fields, self.integer_fields, self.float_fields = \
-            self.ut.create_fields(client_name, "Hybrid")
+            create_fields(client_name, "Hybrid")
         
     def hybrid_auth(self, **kwargs):
         body = {

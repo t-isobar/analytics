@@ -1,13 +1,12 @@
 from datetime import datetime, timedelta
 import requests, json, time
-from connectors._Utils import Utils
+from connectors._Utils import create_fields, my_slice
 
 
 class Facebook:
     def __init__(self, token, account, client_name):
         self.token = token
         self.account = account
-        self.ut = Utils()
 
         self.report_dict = {
             "CAMPAIGNS": {
@@ -45,7 +44,7 @@ class Facebook:
                            "end_time": "STRING"}}}
 
         self.tables_with_schema, self.string_fields, self.integer_fields, self.float_fields = \
-            self.ut.create_fields(client_name, "Facebook")
+            create_fields(client_name, "Facebook")
 
     def prepare_data(self, list_of_data_lists):
         one_list = []
@@ -59,15 +58,6 @@ class Facebook:
         if (headers['total_cputime'] >= 50) or (headers['total_time'] >= 50):
             print("Пришло время для сна.")
             time.sleep(60*60)
-
-    def my_slice(self, slice_ids, limit=5, slice_list=[]):
-        count = len(slice_ids)
-        if count > limit:
-            slice_list.append(slice_ids[:limit])
-            return self.my_slice(slice_ids[limit:], limit, slice_list=slice_list)
-        else:
-            slice_list.append(slice_ids)
-            return slice_list
 
     def expand_dict(self, data_to_expand, dict_with_keys, dict_with_data):
         for key, value in data_to_expand.items():
@@ -88,8 +78,8 @@ class Facebook:
         return dict_with_data
 
     def get_ads_or_adsets(self, campaign_ids, method):
-        campaign_ids_slice = self.my_slice(campaign_ids, 50, [])
-        campaign_ids_2_slice = self.my_slice(campaign_ids_slice, 50, [])
+        campaign_ids_slice = my_slice(campaign_ids, 50, [])
+        campaign_ids_2_slice = my_slice(campaign_ids_slice, 50, [])
         fields_dict = {
             "ads-basic": {
                 "fields": "name,id,status,adset_id,updated_time,campaign_id", "limit": 500,  "dict_of_keys":
@@ -141,7 +131,7 @@ class Facebook:
         date_to_dt = datetime.strptime(date_to, "%Y-%m-%d")
         list_of_days = [datetime.strftime(date_from_dt + timedelta(days=x), "%Y-%m-%d") for x in
                         range(0, (date_to_dt - date_from_dt).days + 1)]
-        list_of_days_slice = self.my_slice(list_of_days, 50, [])
+        list_of_days_slice = my_slice(list_of_days, 50, [])
 
         dict_of_params = {
             "ad": {

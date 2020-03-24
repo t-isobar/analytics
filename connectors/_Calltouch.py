@@ -1,12 +1,11 @@
 import requests
-from connectors._Utils import Utils
+from connectors._Utils import create_fields
 
 
 class Calltouch:
     def __init__(self, ct_site_id, ct_token, client_name):
         self.__ct_token = ct_token
         self.__url = f'http://api.calltouch.ru/calls-service/RestAPI/{ct_site_id}/calls-diary/calls'
-        self.ut = Utils()
         self.report_dict = {
             "CALLS": {
                 "fields": {'date': "STRING", 'callUrl': "STRING", 'uniqueCall': "STRING", 'utmContent': "STRING",
@@ -19,7 +18,7 @@ class Calltouch:
                            'MANUAL': "STRING"}}}
 
         self.tables_with_schema, self.string_fields, self.integer_fields, \
-        self.float_fields = self.ut.create_fields(client_name, "Calltouch", self.report_dict)
+        self.float_fields = create_fields(client_name, "Calltouch", self.report_dict)
 
     def __get_pages(self, date_from, date_to):
         params = {'clientApiId': self.__ct_token, 'dateFrom': date_from, 'dateTo': date_to, 'page': 1, 'limit': 1000}

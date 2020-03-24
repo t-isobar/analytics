@@ -1,12 +1,11 @@
 import requests, time
-from connectors._Utils import Utils
+from connectors._Utils import create_fields
 
 
 class MyTarget:
     def __init__(self, agency_access_token, client_name):
         self.agency_access_token = agency_access_token
         self.url = "https://target.my.com/"
-        self.ut = Utils()
 
         self.report_dict = {
             "ADS": {
@@ -57,7 +56,7 @@ class MyTarget:
         }
 
         self.tables_with_schema, self.string_fields, self.integer_fields, self.float_fields = \
-            self.ut.create_fields(self, client_name, "MyTarget", self.report_dict)
+            create_fields(self, client_name, "MyTarget", self.report_dict)
 
     def request(self, method, offset=0, limit=25, result_list=[], **kwargs):
         headers = {"Authorization": "Bearer " + self.agency_access_token}

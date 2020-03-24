@@ -1,4 +1,4 @@
-from connectors._Utils import Utils
+from connectors._Utils import slice_date_on_period
 from connectors._BigQuery import BigQuery
 from connectors._Calltouch import Calltouch
 from connectors._Facebook import Facebook
@@ -22,7 +22,6 @@ class Report:
 		self.client_name = client_name
 		self.path_to_ga = path_to_ga
 		self.bq = BigQuery(path_to_bq)
-		self.ut = Utils()
 
 	def get_calltouch_report(self, site_id, access_token, date_from, date_to):
 		ct = Calltouch(site_id, access_token, self.client_name)
@@ -170,7 +169,7 @@ class Report:
 		self.bq.check_or_create_dataset(data_set_id)
 		self.bq.check_or_create_tables(ga.tables_with_schema, data_set_id)
 
-		date_range = self.ut.slice_date_on_period(date_from, date_to, 1)
+		date_range = slice_date_on_period(date_from, date_to, 1)
 
 		for date_from, date_to in date_range:
 			for report in ga.report_dict:
@@ -199,7 +198,7 @@ class Report:
 
 		data_set_id = f"{self.client_name}_YandexDirect_{client_login_re}"
 
-		date_range = self.ut.slice_date_on_period(date_from, date_to, period)
+		date_range = slice_date_on_period(date_from, date_to, period)
 
 		self.bq.check_or_create_dataset(data_set_id)
 		self.bq.check_or_create_tables(yandex.tables_with_schema, data_set_id)
@@ -220,7 +219,7 @@ class Report:
 	def get_mytarget_report(self, access_token, date_from, date_to, period, client_login):
 		mt = MyTarget(access_token, self.client_name)
 
-		date_range = self.ut.slice_date_on_period(date_from, date_to, period)
+		date_range = slice_date_on_period(date_from, date_to, period)
 
 		data_set_id = f"{self.client_name}_MyTarget_{client_login}"
 

@@ -1,4 +1,5 @@
 import json, requests
+from connectors._Utils import expand_dict
 
 
 class YandexDirect:
@@ -8,21 +9,6 @@ class YandexDirect:
         self.headers_report = {
             "Authorization": "Bearer " + access_token,
             "Accept-Language": "ru"}
-
-    def expand_dict(self, data_to_expand, dict_with_keys, dict_with_data):
-        if isinstance(data_to_expand, dict):
-            for key, value in data_to_expand.items():
-                if isinstance(value, str):
-                    if key in dict_with_keys.keys():
-                        dict_with_data[dict_with_keys[key]] = value
-                    else:
-                        dict_with_data[key] = value
-                else:
-                    dict_with_data = self.expand_dict(value, dict_with_keys, dict_with_data)
-        elif isinstance(data_to_expand, list):
-            for element_of_list in data_to_expand:
-                dict_with_data = self.expand_dict(element_of_list, dict_with_keys, dict_with_data)
-        return dict_with_data
 
     def __create_body(self, selection_criteria, field_names, limit, offset, **kwargs):
         body = {
@@ -86,7 +72,7 @@ class YandexDirect:
             "CpmBannerAdBuilderAdFieldNames": ["Href"],
             "CpmVideoAdBuilderAdFieldNames": ["Href"]}
         ads = self.__request(selection_criteria, field_names, "ads", 10000, 0, [], "Ads", **params)
-        result_ads = [self.expand_dict(ad, {}, {}) for ad in ads]
+        result_ads = [expand_dict(ad, {}, {}) for ad in ads]
         return result_ads
 
     def get_keywords(self, camapign_ids_list):
