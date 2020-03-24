@@ -79,4 +79,18 @@ class Utils:
 
         return tables_with_schema, string_fields, integer_fields, float_fields
 
+    def expand_dict(self, data_to_expand, dict_with_keys, dict_with_data):
+        if isinstance(data_to_expand, dict):
+            for key, value in data_to_expand.items():
+                if isinstance(value, str):
+                    if key in dict_with_keys.keys():
+                        dict_with_data[dict_with_keys[key]] = value
+                    else:
+                        dict_with_data[key] = value
+                else:
+                    dict_with_data = self.expand_dict(value, dict_with_keys, dict_with_data)
+        elif isinstance(data_to_expand, list):
+            for element_of_list in data_to_expand:
+                dict_with_data = self.expand_dict(element_of_list, dict_with_keys, dict_with_data)
+        return dict_with_data
 

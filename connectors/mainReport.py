@@ -6,7 +6,8 @@ from connectors._GAnalytics import GAnalytics
 from connectors._GAnalyticsUpload import GAnalyticsUpload
 from connectors._Hybrid import Hybrid
 from connectors._MyTarget import MyTarget
-from connectors._Yandex import YandexDirect
+from connectors._YandexDirectReports import YandexDirectReports
+from connectors._YandexDirect import YandexDirect
 
 import pandas as pd
 import re
@@ -194,7 +195,7 @@ class Report:
 
 		"""
 		client_login_re = re.sub('[.-]', '_', client_login)
-		yandex = YandexDirect(access_token, client_login, self.client_name)
+		yandex = YandexDirectReports(access_token, client_login, self.client_name)
 
 		data_set_id = f"{self.client_name}_YandexDirect_{client_login_re}"
 
@@ -258,3 +259,6 @@ class Report:
 		ga_upload = GAnalyticsUpload(self.path_to_ga, account_id, web_property_id, custom_data_source_id)
 		status, message = ga_upload.upload_data(data_frame_to_insert, path_to_csv, file_name)
 		return status, message
+
+	def get_yandex_direct_objects(self):
+		pass

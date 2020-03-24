@@ -21,7 +21,7 @@ class Hybrid:
 
             "ADVERTISER_STAT": {
                 "fields": {"Day": "STRING", "ImpressionCount": "INTEGER", "ClickCount": "INTEGER", "Reach": "INTEGER",
-                       "CTR": "FLOAT", "id": "STRING"}}
+                       "CTR": "FLOAT"}}
         }
 
         self.tables_with_schema, self.string_fields, self.integer_fields, self.float_fields = \

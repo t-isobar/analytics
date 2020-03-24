@@ -1,7 +1,7 @@
 import requests, json, time
 
 
-class YandexDirect:
+class YandexDirectReports:
     def __init__(self, access_token, client_login, client_name):
         self.url = "https://api.direct.yandex.com/json/v5/"
         self.headers_report = {
