@@ -1,7 +1,10 @@
-import time
+import time, json
 from apiclient.discovery import build
 from google.oauth2 import service_account
 import socket
+from googleapiclient.errors import HttpError
+from connectors._Utils import create_fields_ga
+
 
 class GAnalytics:
     def __init__(self, path_to_json, view_id, client_name):
@@ -108,7 +111,7 @@ class GAnalytics:
                     "ga_adContent": "STRING", "ga_date": "STRING", "ga_deviceCategory": "STRING"}}}
 
         self.tables_with_schema, self.string_fields, self.integer_fields, self.float_fields = \
-            self.ut.create_fields_ga(client_name, "GAnalytics", self.report_dict)
+            create_fields_ga(client_name, "GAnalytics", self.report_dict)
 
     def convert_data(self, dimension_list, metric_list, response_data_list):
         columns = dimension_list + metric_list
@@ -128,6 +131,12 @@ class GAnalytics:
             time.sleep(2)
             self.analytics = build('analyticsreporting', 'v4', credentials=self.scoped_credentials)
             return self.request(body)
+        except HttpError as http_error:
+            http_error = json.loads(http_error.content.decode("utf8"))
+            code = http_error['code']
+            message = http_error['message']
+            status = http_error['status']
+            raise Exception(f"code - {code}. status - {status}.\n {message}")
         return response
 
     def create_params(self, list_of_params, type_of_metric):

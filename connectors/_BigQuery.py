@@ -5,6 +5,7 @@ from connectors._Utils import convert_data_frame_as_type, my_slice
 
 class BigQuery:
     def __init__(self, path_to_json):
+        self.path_to_json = path_to_json
         self.client = bigquery.Client.from_service_account_json(path_to_json)
         self.project = self.client.project
 
@@ -21,7 +22,7 @@ class BigQuery:
     def check_or_create_data_set(self, data_set_id):
         data_sets = self.get_data_sets()
         if data_set_id not in data_sets:
-            self.create_dataset(data_set_id)
+            self.create_data_set(data_set_id)
 
     def check_or_create_tables(self, dict_of_table_ids, data_set_id):
         tables = self.get_tables(data_set_id)
@@ -69,7 +70,11 @@ class BigQuery:
     def insert_json(self, data_set_id, table_id, list_of_json):
         table_ref = self.client.dataset(data_set_id).table(table_id)
         table = self.client.get_table(table_ref)
-        self.client.insert_rows_json(table, list_of_json, skip_invalid_rows=True)
+        try:
+            self.client.insert_rows_json(table, list_of_json, skip_invalid_rows=True)
+        except ConnectionError:
+            self.client = bigquery.Client.from_service_account_json(self.path_to_json)
+            self.client.insert_rows_json(table, list_of_json, skip_invalid_rows=True)
 
     def get_table_schema(self, data_set_id, table_id):
         data_set_ref = self.client.dataset(data_set_id)
@@ -102,20 +107,23 @@ class BigQuery:
 
         self.data_to_insert(data_frame, integer_fields, float_fields, string_fields, data_set_id, table_id)
 
-    def insert_difference(self, data_frame_for_insert, integer_fields, float_fields, string_fields, dat_aset_id,
+    def insert_difference(self, data_frame_for_insert, integer_fields, float_fields, string_fields, data_set_id,
                           table_id, db_key, df_key):
-        data_frame_from_db = self.get_select_query(f"SELECT * FROM `{dat_aset_id}.{table_id}` WHERE {db_key} != ''")
+        data_frame_from_db = self.get_select_query(f"SELECT * FROM `{data_set_id}.{table_id}` WHERE {db_key} != ''")
         df_to_insert = data_frame_for_insert[~(data_frame_for_insert[df_key].isin(data_frame_from_db[db_key].tolist()))]
 
-        self.data_to_insert(df_to_insert, integer_fields, float_fields, string_fields, dat_aset_id, table_id)
+        self.data_to_insert(df_to_insert, integer_fields, float_fields, string_fields, data_set_id, table_id)
 
     def data_to_insert(self, data_frame, integer_fields, float_fields, string_fields, data_set_id, table_id):
-        data_frame = convert_data_frame_as_type(data_frame, integer_fields, float_fields, string_fields)
+        if not data_frame.empty:
+            data_frame = convert_data_frame_as_type(data_frame, integer_fields, float_fields, string_fields)
 
-        data_frame_t = data_frame.T
-        data_frame_t_dict = data_frame_t.to_dict()
-        if data_frame_t_dict != {}:
-            total = list(data_frame_t_dict.values())
-            sl_list = my_slice(total, 10000, [])
-            for sl in sl_list:
-                self.insert_json(data_set_id, table_id, sl)
+            data_frame_t = data_frame.T
+            data_frame_t_dict = data_frame_t.to_dict()
+            if data_frame_t_dict != {}:
+                total = list(data_frame_t_dict.values())
+                sl_list = my_slice(total, 10000, [])
+                for sl in sl_list:
+                    self.insert_json(data_set_id, table_id, sl)
+        else:
+            return "DataFrame is empty"

@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 import requests, json, time
-from connectors._Utils import create_fields, my_slice
+from connectors._Utils import create_fields, my_slice, expand_dict
 
 
 class Facebook:
@@ -44,7 +44,7 @@ class Facebook:
                            "end_time": "STRING"}}}
 
         self.tables_with_schema, self.string_fields, self.integer_fields, self.float_fields = \
-            create_fields(client_name, "Facebook")
+            create_fields(client_name, "Facebook", self.report_dict)
 
     def prepare_data(self, list_of_data_lists):
         one_list = []
@@ -58,24 +58,6 @@ class Facebook:
         if (headers['total_cputime'] >= 50) or (headers['total_time'] >= 50):
             print("Пришло время для сна.")
             time.sleep(60*60)
-
-    def expand_dict(self, data_to_expand, dict_with_keys, dict_with_data):
-        for key, value in data_to_expand.items():
-            if isinstance(value, dict):
-                dict_with_data = self.expand_dict(value, dict_with_keys, dict_with_data)
-            elif isinstance(value, list):
-                for element_of_list in value:
-                    dict_with_data = self.expand_dict(element_of_list, dict_with_keys, dict_with_data)
-            else:
-                if key in dict_with_keys.keys():
-                    dict_with_data[dict_with_keys[key]] = value
-                else:
-                    if key == 'link':
-                        dict_with_data.setdefault(key, []).append(value)
-                    else:
-                        dict_with_data[key] = value
-
-        return dict_with_data
 
     def get_ads_or_adsets(self, campaign_ids, method):
         campaign_ids_slice = my_slice(campaign_ids, 50, [])
@@ -101,17 +83,19 @@ class Facebook:
 
             for one_element_in_list in result:
                 if method == 'ads-layout':
-                    mid_result_data = self.expand_dict(one_element_in_list['adcreatives'],
+                    mid_result_data = expand_dict(one_element_in_list['adcreatives'],
                                                        get_data_params['dict_of_keys'], {})
                     mid_result_data['ad_id'] = one_element_in_list['id']
                     result_data.append(mid_result_data)
                 else:
-                    result_data.append(self.expand_dict(one_element_in_list, get_data_params['dict_of_keys'], {}))
+                    result_data.append(expand_dict(one_element_in_list, get_data_params['dict_of_keys'], {}))
             return result_data
         else:
             return "Указан недопустимый метод."
 
-    def get_campaigns(self, campaigns_list=[], after=''):
+    def get_campaigns(self, campaigns_list=None, after=''):
+        if campaigns_list is None:
+            campaigns_list = []
         fields = "name,updated_time,created_time,configured_status,effective_status,start_time,stop_time"
         params = {"access_token": self.token, "limit": 500, "fields": fields}
         if after != '':
@@ -245,7 +229,9 @@ class Facebook:
         result_list = self.get_batch_data(batch, result_list, url_method)
         return result_list
 
-    def get_other_data(self, result_list, result_paging, url_method, headers={}):
+    def get_other_data(self, result_list, result_paging, url_method, headers=None):
+        if headers is None:
+            headers = {}
         next_pages_batch = self.create_next_paging_request(result_paging, url_method)
         result_data = self.get_batch_request(next_pages_batch)
         middle_list, result_paging, headers = self.get_paging_data(result_data, headers)

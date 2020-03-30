@@ -22,8 +22,8 @@ class Calltouch:
 
     def __get_pages(self, date_from, date_to):
         params = {'clientApiId': self.__ct_token, 'dateFrom': date_from, 'dateTo': date_to, 'page': 1, 'limit': 1000}
-        response = requests.get(self.__url, params=params).json()['pageTotal']
-        return response
+        pages = requests.get(self.__url, params=params).json()['pageTotal']
+        return pages
 
     def get_calls(self, date_from, date_to):
         i = 1
@@ -37,7 +37,7 @@ class Calltouch:
         while i <= pages:
             params = {'clientApiId': self.__ct_token, 'dateFrom': date_from, 'dateTo': date_to, 'page': i,
                       'limit': 1000, 'withCallTags': True}
-            list_of_calls = requests.get(self.__url, params = params).json()['records']
+            list_of_calls = requests.get(self.__url, params=params).json()['records']
             i += 1
             for call in list_of_calls:
                 data = call.copy()

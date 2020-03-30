@@ -1,3 +1,4 @@
+from connectors._Utils import create_fields
 import requests, json, time
 
 
@@ -105,7 +106,7 @@ class YandexDirectReports:
         }
 
         self.tables_with_schema, self.string_fields, self.integer_fields, self.float_fields = \
-            self.ut.create_fields(self, client_name, "YandexDirect", self.report_dict)
+            create_fields(client_name, "YandexDirect", self.report_dict)
 
     def __create_body(self, selection_criteria, field_names, report_name, report_type):
         body = {
