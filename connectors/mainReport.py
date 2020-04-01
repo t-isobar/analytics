@@ -55,8 +55,8 @@ class Report:
 		campaigns = hybrid.get_campaigns()
 		campaign_df = pd.DataFrame(campaigns)
 		campaign_ids = campaign_df['Id'].tolist()
-		self.bq.data_to_insert(campaign_df, hybrid.integer_fields, hybrid.float_fields, hybrid.string_fields, data_set_id,
-								f"{self.client_name}_Hybrid_CAMPAIGNS")
+		self.bq.insert_difference(campaign_df, hybrid.integer_fields, hybrid.float_fields, hybrid.string_fields,
+									data_set_id, f"{self.client_name}_Hybrid_CAMPAIGNS", 'Id', 'Id')
 
 		campaign_stat = hybrid.get_campaign_stat(campaign_ids, self.date_from, self.date_to)
 		campaign_stat_df = pd.DataFrame(campaign_stat)
@@ -154,6 +154,11 @@ class Report:
 		ads_basic_df = pd.DataFrame(ads_basic).fillna("<not set>")
 		self.bq.insert_difference(ads_basic_df, fb.integer_fields, fb.float_fields, fb.string_fields, data_set_id,
 									f"{self.client_name}_Facebook_ADS_BASIC", 'id', 'id')
+
+		ads_layout = fb.get_ads_or_adsets(campaigns_ids, "ads-layout")
+		ads_layout_df = pd.DataFrame(ads_layout).fillna("<not set>")
+		self.bq.insert_difference(ads_layout_df, fb.integer_fields, fb.float_fields, fb.string_fields, data_set_id,
+									f"{self.client_name}_Facebook_ADS_LAYOUT", 'id', 'id')
 
 		ad_sets = fb.get_ads_or_adsets(campaigns_ids, "adsets")
 		ad_sets_df = pd.DataFrame(ad_sets).fillna("<not set>")
@@ -258,8 +263,9 @@ class Report:
 		campaigns = vkontakte.get_campaigns()
 		campaign_ids = [campaign_id['id'] for campaign_id in campaigns]
 		campaigns_df = pd.DataFrame(campaigns).fillna(0)
-		self.bq.data_to_insert(campaigns_df, vkontakte.integer_fields, vkontakte.float_fields, vkontakte.string_fields,
-							data_set_id, f"{self.client_name}_VKontakte_CAMPAIGNS")
+		self.bq.insert_difference(campaigns_df, vkontakte.integer_fields, vkontakte.float_fields,
+									vkontakte.string_fields, data_set_id, f"{self.client_name}_VKontakte_CAMPAIGNS",
+									'id', 'id')
 
 		campaign_stat = vkontakte.get_day_stats("campaign", campaign_ids, self.date_from, self.date_to, 100)
 		campaign_ids = [campaign_id['campaign_id'] for campaign_id in campaign_stat]
@@ -270,8 +276,9 @@ class Report:
 		ads = vkontakte.get_ads(campaign_ids)
 		ads_ids = [ad_id['id'] for ad_id in ads]
 		ads_df = pd.DataFrame(ads).fillna(0)
-		self.bq.data_to_insert(ads_df, vkontakte.integer_fields, vkontakte.float_fields, vkontakte.string_fields,
-							data_set_id, f"{self.client_name}_VKontakte_ADS")
+		self.bq.insert_difference(ads_df, vkontakte.integer_fields, vkontakte.float_fields,
+									vkontakte.string_fields, data_set_id, f"{self.client_name}_VKontakte_ADS",
+									'id', 'id')
 
 		ads_stat = vkontakte.get_day_stats("ad", ads_ids, self.date_from, self.date_to, 100)
 		ads_stat_df = pd.DataFrame(ads_stat).fillna(0)
@@ -317,9 +324,35 @@ class Report:
 	def get_vkontakte_agency_clients(self):
 		pass
 
-	def get_yandex_direct_objects(self, access_token, client_login):
-		pass
+	def get_yandex_direct_objects(self, access_token, client_login, campaign_ids=None):
+		client_login_re = re.sub('[.-]', '_', client_login)
+		yandex = YandexDirect(access_token, self.client_name, client_login_re)
+		data_set_id = f"{self.client_name}_YandexDirect_{client_login_re}"
 
-#! TODO: Проверить где изменяемые элементы в параметрах по умолчанию и поменять на None
-#! TODO: Проверить где идет проверку на пустой словарь и убрать ее
-#! TODO: Создать отдельную функцию под скачивание всех кабинетов и клиентов (список логинов)
+		self.bq.check_or_create_data_set(data_set_id)
+		self.bq.check_or_create_tables(yandex.tables_with_schema, data_set_id)
+
+		campaigns = yandex.get_campaigns()
+		campaigns_df = pd.DataFrame(campaigns)
+		self.bq.insert_difference(campaigns_df, yandex.integer_fields, yandex.float_fields, yandex.string_fields,
+									data_set_id, f"{self.client_name}_YandexDirect_CAMPAIGNS", 'Id', 'Id')
+		if campaign_ids is None:
+			campaign_ids = [campaign_id['Id'] for campaign_id in campaigns]
+
+		adsets = yandex.get_adsets(campaign_ids)
+		adsets_df = pd.DataFrame(adsets)
+		self.bq.insert_difference(adsets_df, yandex.integer_fields, yandex.float_fields, yandex.string_fields,
+									data_set_id, f"{self.client_name}_YandexDirect_ADGROUPS", 'Id', 'Id')
+
+		ads = yandex.get_ads(campaign_ids)
+		ads_df = pd.DataFrame(ads)
+		self.bq.insert_difference(ads_df, yandex.integer_fields, yandex.float_fields, yandex.string_fields,
+									data_set_id, f"{self.client_name}_YandexDirect_ADS", 'Id', 'Id')
+
+		keywords = yandex.get_keywords(campaign_ids)
+		keywords_df = pd.DataFrame(keywords)
+		self.bq.insert_difference(keywords_df, yandex.integer_fields, yandex.float_fields, yandex.string_fields,
+									data_set_id, f"{self.client_name}_YandexDirect_KEYWORD", 'Id', 'Id')
+
+
+

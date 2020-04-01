@@ -16,7 +16,7 @@ for client, placement in clients.items():
                 path_to_bq = access_data.path_to_traffic_bq
                 path_to_ga = access_data.path_to_traffic_ga
             elif project == 'lenta':
-                path_to_bq = access_data.path_to_lenta_bq
+                path_to_bq = access_data.path_to_traffic_bq
                 path_to_ga = access_data.path_to_lenta_ga
             else:
                 raise Exception("Нет такого проекта")

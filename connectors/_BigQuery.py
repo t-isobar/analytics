@@ -107,6 +107,10 @@ class BigQuery:
 
         self.data_to_insert(data_frame, integer_fields, float_fields, string_fields, data_set_id, table_id)
 
+    # def get_difference(self, data_set_id, table_id, db_key):
+    #     data_frame_from_db = self.get_select_query(f"SELECT * FROM `{data_set_id}.{table_id}` WHERE {db_key} != ''")
+    #     data_frame_from_db['']
+
     def insert_difference(self, data_frame_for_insert, integer_fields, float_fields, string_fields, data_set_id,
                           table_id, db_key, df_key):
         data_frame_from_db = self.get_select_query(f"SELECT * FROM `{data_set_id}.{table_id}` WHERE {db_key} != ''")

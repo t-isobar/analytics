@@ -56,7 +56,7 @@ class MyTarget:
         }
 
         self.tables_with_schema, self.string_fields, self.integer_fields, self.float_fields = \
-            create_fields(self, client_name, "MyTarget", self.report_dict)
+            create_fields(client_name, "MyTarget", self.report_dict)
 
     def request(self, method, offset=0, limit=25, result_list=[], **kwargs):
         headers = {"Authorization": "Bearer " + self.agency_access_token}

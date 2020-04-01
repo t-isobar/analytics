@@ -23,15 +23,18 @@ class VKApp:
                            "stop_time": "STRING", "category1_id": "STRING", "category2_id": "STRING",
                            "age_restriction": "STRING", "name": "STRING", "events_retargeting_groups": "STRING",
                            "ad_format": "STRING", "cpc": "FLOAT", "ad_platform": "STRING", "cpm": "FLOAT",
-                           "impressions_limit": "INTEGER"}},
+                           "impressions_limit": "INTEGER", "ad_platform_no_ad_network": "STRING", "ocpm": "FLOAT",
+                           "weekly_schedule_use_holidays": "STRING", "weekly_schedule_hours": "STRING"}},
+
             "CAMPAIGN_STAT": {
                 "fields": {"day": "STRING", "spent": "FLOAT", "impressions": "INTEGER", "clicks": "INTEGER",
-                           "reach": "INTEGER", "join_rate": "INTEGER", "ad_id": "STRING", 'lead_form_sends': "STRING",
+                           "reach": "INTEGER", "join_rate": "INTEGER", "campaign_id": "STRING", 'lead_form_sends': "STRING",
                            'goals': "STRING"}},
+
             "ADS_STAT": {
-                "fields": {"day": "STRING", "campaign_id": "STRING", "id": "STRING", "name": "STRING",
-                           "status": "STRING", "updated_time": "STRING", 'lead_form_sends': "STRING",
-                           'goals': "STRING"}},
+                "fields": {"ad_id": "STRING", "clicks": "INTEGER", "day": "STRING", "impressions": "INTEGER",
+                           "join_rate": "FLOAT", "reach": "INTEGER", "spent": "FLOAT", 'lead_form_sends': "INTEGER",
+                           'goals': "INTEGER"}},
             "SEX_STAT": {
                 "fields": {"impressions_rate": "FLOAT", "clicks_rate": "FLOAT", "value": "STRING",
                            "ad_id": "STRING", "day": "STRING"}},

@@ -12,15 +12,17 @@ for client, placement in clients.items():
     if calltouch_params:
         project = placement['bigquery']['project']
         for params in calltouch_params:
-            if project == 'traffic':
-                path_to_bq = access_data.path_to_traffic_bq
-                path_to_ga = access_data.path_to_traffic_ga
-            elif project == 'lenta':
-                path_to_bq = access_data.path_to_lenta_bq
-                path_to_ga = access_data.path_to_lenta_ga
-            else:
-                raise Exception("Нет такого проекта")
+            path_to_bq = access_data.path_to_traffic_bq
+            path_to_ga = access_data.path_to_traffic_ga
+            # if project == 'traffic':
+            #     path_to_bq = access_data.path_to_traffic_bq
+            #     path_to_ga = access_data.path_to_traffic_ga
+            # elif project == 'lenta':
+            #     path_to_bq = access_data.path_to_lenta_bq
+            #     path_to_ga = access_data.path_to_lenta_ga
+            # else:
+            #     raise Exception("Нет такого проекта")
             site_name_re = re.sub('[.-]', '_', params['name'])
-            token = [param['token'] for param in access_data.Calltouch[client] if param['site_id'] == params['site_id']]
+            token = access_data.Calltouch[params['site_id']]
             report = Report(client, path_to_bq, path_to_ga, date_from, date_to)
-            report.get_calltouch_report(params['site_id'], token[0], site_name_re)
+            report.get_calltouch_report(params['site_id'], token, site_name_re)

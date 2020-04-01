@@ -83,7 +83,7 @@ def create_fields_ga(client_name, platform, report_dict):
 def expand_dict(data_to_expand, dict_with_keys, dict_with_data):
     if isinstance(data_to_expand, dict):
         for key, value in data_to_expand.items():
-            if isinstance(value, str):
+            if isinstance(value, str) or isinstance(value, int) or isinstance(value, float):
                 if key in dict_with_keys.keys():
                     dict_with_data[dict_with_keys[key]] = value
                 else:

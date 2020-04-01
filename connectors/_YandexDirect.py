@@ -30,7 +30,8 @@ class YandexDirect:
             "ADS": {
                 "fields": {
                     "Type": "STRING", "Text": "STRING", "Title": "STRING", "DisplayDomain": "STRING", "Href": "STRING",
-                    "DisplayUrlPath": "STRING", "Title2": "STRING"
+                    "DisplayUrlPath": "STRING", "Title2": "STRING", "AdCategories": "STRING", "AdGroupId": "STRING",
+                    "CampaignId": "STRING", "Id": "STRING"
                 }
             },
             "KEYWORD": {
@@ -103,8 +104,7 @@ class YandexDirect:
             selection_criteria = {"CampaignIds": ids}
             field_names = ["AdCategories", "AdGroupId", "CampaignId", "Id", "Type"]
             params = {
-                "TextAdFieldNames": ["DisplayDomain", "Href", "Text", "Title", "Title2", "DisplayUrlPath",
-                                     "AdExtensions"],
+                "TextAdFieldNames": ["DisplayDomain", "Href", "Text", "Title", "Title2", "DisplayUrlPath"],
                 "TextImageAdFieldNames": ["Href"],
                 "TextAdBuilderAdFieldNames": ["Href"],
                 "CpcVideoAdBuilderAdFieldNames": ["Href"],
@@ -124,3 +124,5 @@ class YandexDirect:
             keywords = self.__request(selection_criteria, field_names, "keywords", 10000, 0, [], "Keywords")
             result_keywords += keywords
         return result_keywords
+
+
