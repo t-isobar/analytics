@@ -24,7 +24,9 @@ class VKApp:
                            "age_restriction": "STRING", "name": "STRING", "events_retargeting_groups": "STRING",
                            "ad_format": "STRING", "cpc": "FLOAT", "ad_platform": "STRING", "cpm": "FLOAT",
                            "impressions_limit": "INTEGER", "ad_platform_no_ad_network": "STRING", "ocpm": "FLOAT",
-                           "weekly_schedule_use_holidays": "STRING", "weekly_schedule_hours": "STRING"}},
+                           "weekly_schedule_use_holidays": "STRING", "weekly_schedule_hours": "STRING",
+                           "impressions_limited": "STRING", "ad_platform_no_wall": "STRING",
+                           "autobidding_max_cost": "STRING", "autobidding": "STRING"}},
 
             "CAMPAIGN_STAT": {
                 "fields": {"day": "STRING", "spent": "FLOAT", "impressions": "INTEGER", "clicks": "INTEGER",

@@ -9,6 +9,7 @@ from analytics.connectors._MyTarget import MyTarget
 from analytics.connectors._VKontakte import VKApp
 from analytics.connectors._YandexDirectReports import YandexDirectReports
 from analytics.connectors._YandexDirect import YandexDirect
+from analytics.connectors._YandexMetrica import YandexMetrica
 
 import pandas as pd
 import re
@@ -352,6 +353,37 @@ class Report:
 		keywords_df = pd.DataFrame(keywords)
 		self.bq.insert_difference(keywords_df, yandex.integer_fields, yandex.float_fields, yandex.string_fields,
 									data_set_id, f"{self.client_name}_YandexDirect_KEYWORD", 'Id', 'Id')
+
+	def get_metrica_report(self, access_token, view_id, report_range, conversions_list):
+		metrica = YandexMetrica(access_token, self.client_name, view_id)
+		data_set_id = f"{self.client_name}_YandexMetrica_{view_id}"
+
+		conversion_schema = metrica.create_conv_schema(conversions_list)
+		metrica.report_dict['CONVERSIONS']['metrics'] = conversion_schema
+		metrica.integer_fields = metrica.integer_fields + list(conversion_schema.keys())
+		metrica.tables_with_schema[f"{self.client_name}_YandexMetrica_CONVERSIONS"].update(conversion_schema)
+
+		self.bq.check_or_create_data_set(data_set_id)
+		self.bq.check_or_create_tables(metrica.tables_with_schema, data_set_id)
+
+		date_range = slice_date_on_period(self.date_from, self.date_to, 90)
+
+		for report in metrica.report_dict:
+			if report in report_range:
+				for date_from, date_to in date_range:
+					metric_list = [re.sub('[_]', ':', field) for field in
+									list(metrica.report_dict[report]['metrics'].keys())]
+					dimension_list = [re.sub('[_]', ':', field) for field in
+										list(metrica.report_dict[report]['dimensions'].keys())]
+
+					report_data = metrica.get_report(date_from, date_to, metric_list, dimension_list)
+					names = [re.sub('[:]', '_', field) for field in report_data[0]]
+					report_data_df = pd.DataFrame(report_data[1], columns=names)
+					# return report_data_df.info()
+
+					self.bq.data_to_insert(report_data_df, metrica.integer_fields, metrica.float_fields,
+											metrica.string_fields, data_set_id,
+											f"{self.client_name}_YandexMetrica_{report}")
 
 
 

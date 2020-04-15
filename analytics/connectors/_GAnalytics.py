@@ -151,7 +151,9 @@ class GAnalytics:
             params_dict.append({key: param})
         return params_dict
 
-    def create_body(self, date_from, date_to, metric, dimension, page_token=''):
+    def create_body(self, date_from, date_to, metric, dimension, page_token='', dimension_filter=None):
+        if dimension_filter is None:
+            dimension_filter = []
         body = {
             "reportRequests":
                 [{
@@ -159,6 +161,7 @@ class GAnalytics:
                     "dateRanges": [{"startDate": date_from, "endDate": date_to}],
                     "metrics": metric,
                     "dimensions": dimension,
+                    "dimensionFilterClauses": dimension_filter,
                     "samplingLevel": "LARGE",
                     "pageSize": 50000,
                     "pageToken": page_token
@@ -166,21 +169,25 @@ class GAnalytics:
         }
         return body
 
-    def get_request(self, date_from, date_to, metric_list, dimension_list):
+    def get_request(self, date_from, date_to, metric_list, dimension_list, dimension_filter):
         metric = self.create_params(metric_list, 'metrics')
         dimension = self.create_params(dimension_list, 'dimensions')
         response_data_list = []
 
-        body = self.create_body(date_from, date_to, metric, dimension)
+        body = self.create_body(date_from, date_to, metric, dimension, dimension_filter=dimension_filter)
 
         response = self.request(body)
-        response_data_list.append(response['reports'][0]['data']['rows'])
-
-        while response['reports'][0].get('nextPageToken') != None:
-            page_token = response['reports'][0]['nextPageToken']
-            body = self.create_body(date_from, date_to, metric, dimension, page_token=page_token)
-            response = self.request(body)
+        if response['reports'][0]['data'].get("rows", False):
             response_data_list.append(response['reports'][0]['data']['rows'])
-            time.sleep(2)
-        columns, result_list_of_data = self.convert_data(dimension_list, metric_list, response_data_list)
-        return columns, result_list_of_data
+
+            while response['reports'][0].get('nextPageToken') != None:
+                page_token = response['reports'][0]['nextPageToken']
+                body = self.create_body(date_from, date_to, metric, dimension, page_token=page_token,
+                                        dimension_filter=dimension_filter)
+                response = self.request(body)
+                response_data_list.append(response['reports'][0]['data']['rows'])
+                time.sleep(2)
+            columns, result_list_of_data = self.convert_data(dimension_list, metric_list, response_data_list)
+            return columns, result_list_of_data
+        else:
+            return []
