@@ -247,6 +247,16 @@ class Report:
 			self.bq.data_to_insert(stat_banner_df, mt.integer_fields, mt.float_fields, mt.string_fields, data_set_id,
 							f"{self.client_name}_MyTarget_BANNER_STAT")
 
+			banner_reach = mt.get_banner_reach_stat(date_from, date_to)
+			banner_reach_df = pd.DataFrame(banner_reach)
+			self.bq.data_to_insert(banner_reach_df, mt.integer_fields, mt.float_fields, mt.string_fields, data_set_id,
+									f"{self.client_name}_MyTarget_BANNER_REACH")
+
+			campaign_reach = mt.get_campaign_reach_stat(date_from, date_to)
+			campaign_reach_df = pd.DataFrame(campaign_reach)
+			self.bq.data_to_insert(campaign_reach_df, mt.integer_fields, mt.float_fields, mt.string_fields, data_set_id,
+									f"{self.client_name}_MyTarget_CAMPAIGN_REACH")
+
 			stat_campaigns = mt.get_campaigns_stat(date_from, date_to)
 			stat_campaigns_df = pd.DataFrame(stat_campaigns)
 			self.bq.data_to_insert(stat_campaigns_df, mt.integer_fields, mt.float_fields, mt.string_fields, data_set_id,

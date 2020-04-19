@@ -64,7 +64,11 @@ class YandexDirect:
 
     def __request(self, selection_criteria, field_names, method, limit, offset, total_list, key, **kwargs):
         jsonBody = self.__create_body(selection_criteria, field_names, limit, offset, **kwargs)
-        data = requests.post(self.url + method, jsonBody, headers=self.headers_report).json()
+        try:
+            data = requests.post(self.url+method, jsonBody, headers=self.headers_report).json()
+        except requests.exceptions.ConnectionError as error:
+            print(error)
+            data = requests.post(self.url + method, jsonBody, headers=self.headers_report).json()
         total_list += data['result'][key]
         if data['result'].get("LimitedBy", False):
             offset += limit

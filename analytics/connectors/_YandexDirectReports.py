@@ -126,7 +126,11 @@ class YandexDirectReports:
 
     def __request(self, selection_criteria, field_names, report_name, report_type, method):
         jsonBody = self.__create_body(selection_criteria, field_names, report_name, report_type)
-        data = requests.post(self.url+method, jsonBody, headers=self.headers_report)
+        try:
+            data = requests.post(self.url+method, jsonBody, headers=self.headers_report)
+        except requests.exceptions.ConnectionError as error:
+            print(error)
+            data = requests.post(self.url + method, jsonBody, headers=self.headers_report)
         if data.status_code in [201, 202]:
             time.sleep(60)
             return self.__request(selection_criteria, field_names, report_name, report_type, method)

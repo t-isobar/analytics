@@ -6,6 +6,7 @@ class MyTarget:
     def __init__(self, agency_access_token, client_name):
         self.agency_access_token = agency_access_token
         self.url = "https://target.my.com/"
+        self.report_list = ['base', 'video', 'events', 'uniques']
 
         self.report_dict = {
             "ADS": {
@@ -52,7 +53,15 @@ class MyTarget:
                     "viewed_25_percent_rate": "FLOAT", "viewed_50_percent": "INTEGER",
                     "viewed_50_percent_cost": "FLOAT", "viewed_50_percent_rate": "FLOAT",
                     "viewed_75_percent": "INTEGER", "viewed_75_percent_cost": "FLOAT",
-                    "viewed_75_percent_rate": "FLOAT", "votings": "INTEGER", "vr": "FLOAT"}}
+                    "viewed_75_percent_rate": "FLOAT", "votings": "INTEGER", "vr": "FLOAT"}},
+
+            "CAMPAIGN_REACH": {
+                "fields": {"id": "STRING", "day": "STRING", "reach": "INTEGER", "total": "INTEGER",
+                           "increment": "INTEGER", "frequency": "FLOAT"}},
+
+            "BANNER_REACH": {
+                "fields": {"id": "STRING", "day": "STRING", "reach": "INTEGER", "total": "INTEGER",
+                           "increment": "INTEGER", "frequency": "FLOAT"}}
         }
 
         self.tables_with_schema, self.string_fields, self.integer_fields, self.float_fields = \
@@ -82,6 +91,20 @@ class MyTarget:
         stat = self.prepare_stat(stat['items'])
         return stat
 
+    def get_campaign_reach_stat(self, date_from, date_to):
+        headers = {"Authorization": "Bearer " + self.agency_access_token}
+        params = {"date_from": date_from, "date_to": date_to, "metrics": "uniques"}
+        stat = requests.get(self.url + "api/v2/statistics/campaigns/day.json", headers=headers, params=params).json()
+        stat = self.prepare_stat(stat['items'])
+        return stat
+
+    def get_banner_reach_stat(self, date_from, date_to):
+        headers = {"Authorization": "Bearer " + self.agency_access_token}
+        params = {"date_from": date_from, "date_to": date_to, "metrics": "uniques"}
+        stat = requests.get(self.url + "api/v2/statistics/banners/day.json", headers=headers, params=params).json()
+        stat = self.prepare_stat(stat['items'])
+        return stat
+
     def prepare_stat(self, stat):
         list_of_stat = []
         for one in stat:
@@ -89,10 +112,10 @@ class MyTarget:
                 stats = {}
                 stats['id'] = one['id']
                 stats['day'] = element['date']
-                stats.update(element['base'])
-                stats.update(element['video'])
-                stats.update(element['events'])
-                list_of_stat.append(stats)
+                for key in element.keys():
+                    if key in self.report_list:
+                        stats.update(element[key])
+                        list_of_stat.append(stats)
         return list_of_stat
 
     def get_campaigns_stat(self, date_from, date_to):
